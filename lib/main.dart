@@ -8,8 +8,8 @@ import 'package:task4/helper/const/string_helper.dart';
 import 'package:task4/repository/audio_reposirty.dart';
 import 'package:task4/repository/get_imageRepo.dart';
 import 'package:task4/repository/get_video_repository.dart';
-import 'package:task4/representation/views/home_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task4/representation/views/imagesScreen/image_screen.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: StringHelp.TITLE_TEXT,
         debugShowCheckedModeBanner: false,
-        home: const MainScreen(),
+        home: const ImageScreen(),
       ),
     );
       

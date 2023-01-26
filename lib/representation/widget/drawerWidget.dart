@@ -7,7 +7,6 @@ import 'package:task4/helper/const/image_helper.dart';
 import 'package:task4/helper/const/string_helper.dart';
 import 'package:task4/representation/views/audioScreen/audio_screen.dart';
 import 'package:task4/representation/views/imagesScreen/image_screen.dart';
-import 'package:task4/representation/views/home_screen.dart';
 import 'package:task4/representation/views/videoScreen/video_screen.dart';
 import 'package:task4/representation/widget/text_widget.dart';
 class DrawerWidget extends StatelessWidget {
@@ -34,14 +33,6 @@ class DrawerWidget extends StatelessWidget {
                 Center(child: TextWidget(txt: StringHelp.random_email,)),
               ],
             ),
-          ),
-          ListTile(
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen()));
-            },
-            leading: IconHelper.HOME_ICON,
-            title:TextWidget(txt:StringHelp.MAIN_SCREEN),
           ),
           ListTile(
             onTap: () {

@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:task4/bloc/video_blocs/video_events.dart';
 import 'package:task4/bloc/video_blocs/video_state.dart';
 import 'package:task4/repository/get_video_repository.dart';
@@ -11,23 +10,41 @@ import 'package:video_player/video_player.dart';
 
 class VideoBloc extends Bloc<GetVideo,VideoStates>{
  GetVideoRepo getVideRepo =GetVideoRepo();
-
+ VideoPlayerController? video;
+ Uint8List ? thumbImg;
  VideoBloc({required this.getVideRepo}) : super(VideoStates()){
 
    on<FetchVideo>(_fetchVideo);
-   on<Closed>(_disposedScreen);
+   on<Play>(_play);
+   on<Pause>(_pause);
    
  }
 
- FutureOr<void> _fetchVideo(event, emit) async{
-  askPermission();
-  try {
-    emit(state.copyWith(
-    status: VideoStatus.initial
+ _play(event,emit){
+   getVideRepo.play();
+   emit(
+    state.copyWith(
+    status: VideoStatus.success,
+    thumbnailImg: thumbImg,
+    video: video
     ));
-    VideoPlayerController? video=await getVideRepo.pickVideo(event.src);
-    Uint8List? thumbImg=await getVideRepo.getThumbNail();
-    emit(state.copyWith(
+ }
+  _pause(event,emit){
+   getVideRepo.pause();
+   emit(
+    state.copyWith(
+    status: VideoStatus.pause,
+    thumbnailImg: thumbImg,
+    video: video
+    ));
+ }
+
+ FutureOr<void> _fetchVideo(event, emit) async{
+  try {
+    video=await getVideRepo.pickVideo(event.src);
+    thumbImg=await getVideRepo.getThumbNail();
+    emit(
+    state.copyWith(
     status: VideoStatus.success,
     thumbnailImg: thumbImg,
     video: video
@@ -36,35 +53,10 @@ class VideoBloc extends Bloc<GetVideo,VideoStates>{
   } catch (e) {
     emit(state.copyWith(
     status: VideoStatus.failure,
+    video: video,
+    thumbnailImg: thumbImg
+
     ));
   }
    }
-
-    _disposedScreen(event, emit){
-  try {
-
-    emit(state.copyWith(
-    status: VideoStatus.initial
-    ));
-    
-  } catch (e) {
-    emit(state.copyWith(
-    status: VideoStatus.failure
-    ));
-  }
- }
-
-askPermission() async{
-    PermissionStatus status = await Permission.mediaLibrary.request();
-    if(status.isDenied == true || status.isPermanentlyDenied)
-      {
-        askPermission();
-      }
-    else
-      {
-        return true;
-      }
-      return ;
-  }
- 
  }

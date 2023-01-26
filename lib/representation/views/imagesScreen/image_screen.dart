@@ -2,10 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:task4/bloc/image_blocs/image_screen_bloc.dart';
-import 'package:task4/bloc/image_blocs/image_screen_event.dart';
 import 'package:task4/bloc/image_blocs/image_state.dart';
+import 'package:task4/helper/const/const.dart';
 import 'package:task4/helper/const/icon_helper.dart';
 import 'package:task4/helper/const/string_helper.dart';
 import 'package:task4/representation/widget/button_widget.dart';
@@ -36,26 +35,16 @@ class _ImageScreenState extends State<ImageScreen> {
                   children: <Widget>[
                     ListTile(
                       leading: IconHelper.IMAGE_ICON,
-                      onTap: () {
-                        Navigator.pop(context);
-                        BlocProvider.of<ImageBloc>(context)
-                            .add(FetchImage(ImageSource.gallery));
-                      },
+                      onTap: ()=> permissionUtils.askGalleryPermission(context),
                       title: TextWidget(txt: StringHelp.PICK_FROM_GALLERY),
                     ),
                     ListTile(
                       leading: IconHelper.VIDEO_ICON,
-                      onTap: () {
-                        Navigator.pop(context);
-                        BlocProvider.of<ImageBloc>(context)
-                            .add(FetchImage(ImageSource.camera));
-                      },
+                      onTap: () =>permissionUtils.askCameraPermission(context),
                       title:TextWidget(txt: StringHelp.PICK_FROM_CAMERA),
                     ),
                     TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                      onPressed: () => Navigator.pop(context),
                       child: TextWidget(txt: StringHelp.CANCEL),
                     ),
                   ],
@@ -72,18 +61,6 @@ class _ImageScreenState extends State<ImageScreen> {
   void initState() {
     super.initState();
   }
-
-   @override
-  void didChangeDependencies() {
-   BlocProvider.of<ImageBloc>(context).add(Closed());
-    super.didChangeDependencies();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,7 +86,7 @@ class _ImageScreenState extends State<ImageScreen> {
 
                       if (state.status == ImageStatus.success){
                       return Container(
-                        height: 500,
+                        height: 450,
                         width: double.infinity,
                           child: Image.file(state.img!,fit: BoxFit.fill,));
                       }
@@ -118,8 +95,14 @@ class _ImageScreenState extends State<ImageScreen> {
                           child: TextWidget(txt: StringHelp.NO_FILE));
                       }
                       if (state.status == ImageStatus.failure){
+                        if (state.img !=null ) {
+                          return Container(
+                            height: 450,
+                        width: double.infinity,
+                          child: Image.file(state.img!,fit: BoxFit.cover,));
+                        }
                        return Container(
-                          child:TextWidget(txt: StringHelp.ERROR_TEXT)
+                          child:TextWidget(txt: StringHelp.NO_FILE)
                           );
                       }
                       return Container();

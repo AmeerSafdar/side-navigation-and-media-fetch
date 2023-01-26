@@ -2,7 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:video_player/video_player.dart';
 
-enum VideoStatus { initial, success, failure }
+enum VideoStatus { initial, success, failure, play, pause }
 
 class VideoStates {
   const VideoStates({

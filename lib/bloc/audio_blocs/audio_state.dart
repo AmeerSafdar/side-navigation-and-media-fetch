@@ -1,18 +1,18 @@
 import 'package:audioplayers/audioplayers.dart';
 
-enum AudioStatus { initial, success, failure }
+enum AudioStatus { initial, success, failure, play, pause, drag }
 
 class AudioStates {
    AudioStates({
     this.status = AudioStatus.initial,
     this.audio ,
-    this.duration = Duration.zero,
-    this.position = Duration.zero
+    this.duration ,
+    this.position
   }); 
   final AudioStatus status;
   final AudioPlayer? audio;
-  final Duration duration;
-   Duration position;
+  final Duration? duration;
+   Duration? position;
     AudioStates copyWith({
     AudioStatus? status,
     AudioPlayer? audio,

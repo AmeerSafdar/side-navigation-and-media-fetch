@@ -7,3 +7,5 @@ class FetchVideo extends GetVideo{
   FetchVideo(this.src);
 }
 class Closed extends GetVideo{}
+class Play extends GetVideo{}
+class Pause extends GetVideo{}

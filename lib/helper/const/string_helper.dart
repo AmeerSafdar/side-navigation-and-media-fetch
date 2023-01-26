@@ -23,5 +23,10 @@ static String PICK_IMAGE_FROM="Pick Image from";
 static String PICK_FROM_CAMERA="Pick from Camera";
 static String PICK_FROM_GALLERY="Pick from Gallery";
 static String CANCEL="CANCEL";
+static String PERMISSION="Permission";
+static String PERMISSION_DENIED="Permission is denied . Open App settings";
+static String OPEN="Open";
+static String OPEN_APP_SETTINGS='Open App settings?';
+
 
 }

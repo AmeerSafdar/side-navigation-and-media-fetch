@@ -31,6 +31,17 @@ class GetVideoRepo{
  
   }
 
+  pause(){
+    if (_videoPlayerController.value.isPlaying) {
+      _videoPlayerController.pause();
+    }
+  }
+  play(){
+    if (!_videoPlayerController.value.isPlaying) {
+      _videoPlayerController.play();
+    }
+  }
+
 Future<Uint8List?> getThumbNail() async{
       _thumNailImg = await VideoThumbnail.thumbnailData(
           video: video!.path,
