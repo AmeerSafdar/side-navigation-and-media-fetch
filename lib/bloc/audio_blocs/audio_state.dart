@@ -1,6 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 
-enum AudioStatus { initial, success, failure, play, pause, drag }
+enum AudioStatus { initial, success, failure, play, pause, drag, denied, permamentDenied }
 
 class AudioStates {
    AudioStates({

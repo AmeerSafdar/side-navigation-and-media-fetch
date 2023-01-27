@@ -1,6 +1,6 @@
 import 'dart:io';
 
-enum ImageStatus { initial, success, failure }
+enum ImageStatus { initial, success, failure, cameraDenied, cameraPermanentDenied, galleryDenied, galleryPermanentDenied}
 
 class ImageStates {
   const ImageStates({

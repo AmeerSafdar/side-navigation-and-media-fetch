@@ -1,10 +1,10 @@
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter/cupertino.dart';
 
 abstract class GetVideo {}
 
 class FetchVideo extends GetVideo{
-  final ImageSource src;
-  FetchVideo(this.src);
+  BuildContext context;
+  FetchVideo(this.context);
 }
 class Closed extends GetVideo{}
 class Play extends GetVideo{}

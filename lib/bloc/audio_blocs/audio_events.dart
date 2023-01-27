@@ -1,7 +1,9 @@
-abstract class GetAudio {}
 
+import 'package:flutter/cupertino.dart';
+abstract class GetAudio {}
 class FetchAudio extends GetAudio{
-  FetchAudio();
+  BuildContext context;
+  FetchAudio(this.context);
 }
 class Closed extends GetAudio{}
 class GetDuration extends GetAudio{}

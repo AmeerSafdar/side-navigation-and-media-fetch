@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:task4/bloc/audio_blocs/audio_events.dart';
 import 'package:task4/bloc/audio_blocs/audio_state.dart';
 import 'package:task4/bloc/audio_blocs/audio_bloc.dart';
@@ -25,19 +26,21 @@ class AudioScreen extends StatefulWidget {
 class _AudioScreenState extends State<AudioScreen> {
   Duration? positions, durations;
   late Timer? timer;
-  getDuration(){
-    timer=Timer.periodic(Duration(seconds: 1), (Timer t) => BlocProvider.of<AudioBlocs>(context).add(GetDuration()));
+  getDuration() {
+    timer = Timer.periodic(Duration(seconds: 1),
+        (Timer t) => BlocProvider.of<AudioBlocs>(context).add(GetDuration()));
   }
+
   @override
   void initState() {
     super.initState();
-   
-  }  
+  }
+
   @override
-void didChangeDependencies() {
+  void didChangeDependencies() {
     super.didChangeDependencies();
     getDuration();
-}
+  }
 
   @override
   void dispose() {
@@ -46,159 +49,191 @@ void didChangeDependencies() {
   }
 
   String _printDuration(Duration? duration) {
-  String twoDigits(int n) => n.toString().padLeft(2, "0");
-  if (duration != null) {
-  String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-  String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-  return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    if (duration != null) {
+      String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+      String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+      return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+    }
+    return '';
   }
-  return '';
-}
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       floatingActionButton: BlocBuilder<AudioBlocs, AudioStates>(
         builder: (context, state) {
           return FloatingActionButton(
               onPressed: () {
-               if (state.audio != null) 
-               { 
-                if (state.status==AudioStatus.pause|| state.status==AudioStatus.drag) {
-                  BlocProvider.of<AudioBlocs>(context).add(Play());
-                } else if(state.status==AudioStatus.success  ){
-                  BlocProvider.of<AudioBlocs>(context).add(Pause());
+                if (state.audio != null) {
+                  if (state.status == AudioStatus.pause ||
+                      state.status == AudioStatus.drag) {
+                    BlocProvider.of<AudioBlocs>(context).add(Play());
+                  } else if (state.status == AudioStatus.success) {
+                    BlocProvider.of<AudioBlocs>(context).add(Pause());
+                  }
+                  if (state.status == AudioStatus.failure &&
+                      state.audio != null) {
+                    BlocProvider.of<AudioBlocs>(context).add(Play());
+                  }
                 }
-                if (state.status==AudioStatus.failure && state.audio !=null) {
-                  BlocProvider.of<AudioBlocs>(context).add(Play());
-                  
-                }
-                }
-
-                } , 
-                child:(state.status== AudioStatus.pause ||( state.status== AudioStatus.failure && state.audio!=null)) ? IconHelper.PLAY_ICON : IconHelper.PAUSE_ICON);
+              },
+              child: (state.status == AudioStatus.pause ||
+                      (state.status == AudioStatus.failure &&
+                          state.audio != null))
+                  ? IconHelper.PLAY_ICON
+                  : IconHelper.PAUSE_ICON);
         },
       ),
       drawer: DrawerWidget(),
-      appBar: AppBar(title: TextWidget(txt:StringHelp.AUDIO_SCREEN),),
+      appBar: AppBar(
+        title: TextWidget(txt: StringHelp.AUDIO_SCREEN),
+      ),
+      body: BlocListener<AudioBlocs, AudioStates>(
+        listener: (context, state) {
+          if (state.status==AudioStatus.denied) {
+         dialogUtils.showAlertDialog(context, yesButtonTaped: ()=>Navigator.pop(context), 
+          noBtnPress: ()=>Navigator.pop(context), 
+          action: StringHelp.PERMISSION, titleContent: StringHelp.PERMISSION_DENIED);
+          }
+          else if (state.status==AudioStatus.permamentDenied){
+             dialogUtils.showAlertDialog(
+                  context, yesButtonTaped: (){
+                    Navigator.pop(context);
+                    openAppSettings();
+                    }, 
+                  noBtnPress: ()=>Navigator.pop(context),
+                  action: StringHelp.PERMISSION, 
+                  titleContent: '${StringHelp.PERMISSION_DENIED} ${StringHelp.OPEN_APP_SETTINGS}');
       
-      body: Center(
-        child: BlocBuilder<AudioBlocs, AudioStates>(
-          builder: (context, state) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if(state.status == AudioStatus.success && state.duration !=null )
+          }
+        },
+        child: Center(
+          child: BlocBuilder<AudioBlocs, AudioStates>(
+            builder: (context, state) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if ((state.status == AudioStatus.success ||state.status == AudioStatus.permamentDenied||state.status == AudioStatus.denied )&&
+                        state.duration != null)
                       Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextWidget(
-                            txt: _printDuration(state.position),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextWidget(
+                              txt: _printDuration(state.position),
                             ),
-                        ),
-                        Flexible(
-                          child: Slider(
-                            min:0 ,
-                            max:state.duration !=null ? state.duration!.inMilliseconds.toDouble():0.0 ,
-                            value:state.position !=null ? state.position!.inMilliseconds.toDouble():0.0 , 
-                            onChanged: (val){
-                              durations=Duration(microseconds: (val * 1000).toInt());
-                              BlocProvider.of<AudioBlocs>(context).add(Drag(durations));
-                             
-                          }
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextWidget(
-                            txt: _printDuration(state.duration),
-                            ),
-                          
-                        ),
-                      ],
-                    ),
-                    if( state.status == AudioStatus.pause && state.duration!=null )
-                         Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextWidget(
-                            txt: _printDuration(state.position),
-                            ),
-                        ),
-                        Flexible(
-                          child: Slider(
-                            min:0 ,
-                            max:state.duration !=null ? state.duration!.inMilliseconds.toDouble():0.0 ,
-                            value: state.position !=null ? state.position!.inMilliseconds.toDouble():0.0 ,
-                            onChanged: (val){
-                               
-                              durations=Duration(microseconds: (val * 1000).toInt());
-                              BlocProvider.of<AudioBlocs>(context).add(Drag(durations));
-                            
-                          }
+                          Flexible(
+                            child: Slider(
+                                min: 0,
+                                max: state.duration != null
+                                    ? state.duration!.inMilliseconds.toDouble()
+                                    : 0.0,
+                                value: state.position != null
+                                    ? state.position!.inMilliseconds.toDouble()
+                                    : 0.0,
+                                onChanged: (val) {
+                                  durations = Duration(
+                                      microseconds: (val * 1000).toInt());
+                                  BlocProvider.of<AudioBlocs>(context)
+                                      .add(Drag(durations));
+                                }),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextWidget(
-                           txt: _printDuration(state.duration)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextWidget(
+                              txt: _printDuration(state.duration),
                             ),
-                          
-                        ),
-                      ],
-                    )
-                  else if(state.status== AudioStatus.failure && state.duration!=null)
-                      Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextWidget(
-                            txt: _printDuration(state.position),
-                            ),
-                        ),
-                        Flexible(
-                          child: Slider(
-                            min:0 ,
-                            max:state.duration !=null ? state.duration!.inMilliseconds.toDouble():0.0 ,
-                            value: state.position !=null ? state.position!.inMilliseconds.toDouble():0.0 ,
-                            onChanged: (val){
-                              durations=Duration(microseconds: (val * 1000).toInt());
-                              BlocProvider.of<AudioBlocs>(context).add(Drag(durations));
-                             
-                          }
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextWidget(
-                            txt: _printDuration(state.duration),
-                            ),
-                          
-                        ),
-                      ],
-                    ),
-
-                  SizedBox(
-                    height: 12,
-                  ),
-                  Center(
-                    child: ButtonWidget(
-                      txt: StringHelp.PICK_AUDIO,
-                      press: ()=> permissionUtils.audioPermission(context),
+                        ],
                       ),
-                  )
-                ],
-              ),
-            );
-          },
+                    if ((state.status == AudioStatus.pause ||state.status == AudioStatus.permamentDenied||state.status == AudioStatus.denied ) &&
+                        state.duration != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextWidget(
+                              txt: _printDuration(state.position),
+                            ),
+                          ),
+                          Flexible(
+                            child: Slider(
+                                min: 0,
+                                max: state.duration != null
+                                    ? state.duration!.inMilliseconds.toDouble()
+                                    : 0.0,
+                                value: state.position != null
+                                    ? state.position!.inMilliseconds.toDouble()
+                                    : 0.0,
+                                onChanged: (val) {
+                                  durations = Duration(
+                                      microseconds: (val * 1000).toInt());
+                                  BlocProvider.of<AudioBlocs>(context)
+                                      .add(Drag(durations));
+                                }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child:
+                                TextWidget(txt: _printDuration(state.duration)),
+                          ),
+                        ],
+                      )
+                    else if ((state.status == AudioStatus.failure ||state.status == AudioStatus.permamentDenied||state.status == AudioStatus.denied )&&
+                        state.duration != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextWidget(
+                              txt: _printDuration(state.position),
+                            ),
+                          ),
+                          Flexible(
+                            child: Slider(
+                                min: 0,
+                                max: state.duration != null
+                                    ? state.duration!.inMilliseconds.toDouble()
+                                    : 0.0,
+                                value: state.position != null
+                                    ? state.position!.inMilliseconds.toDouble()
+                                    : 0.0,
+                                onChanged: (val) {
+                                  durations = Duration(
+                                      microseconds: (val * 1000).toInt());
+                                  BlocProvider.of<AudioBlocs>(context)
+                                      .add(Drag(durations));
+                                }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextWidget(
+                              txt: _printDuration(state.duration),
+                            ),
+                          ),
+                        ],
+                      ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    Center(
+                      child: ButtonWidget(
+                        txt: StringHelp.PICK_AUDIO,
+                        press: () => BlocProvider.of<AudioBlocs>(context)
+                            .add(FetchAudio(context)),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
