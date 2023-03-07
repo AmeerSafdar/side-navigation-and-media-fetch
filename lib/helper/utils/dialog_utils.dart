@@ -7,7 +7,7 @@ import 'package:task4/bloc/image_blocs/image_screen_bloc.dart';
 import 'package:task4/bloc/image_blocs/image_state.dart';
 import 'package:task4/helper/const/icon_helper.dart';
 import 'package:task4/helper/const/string_helper.dart';
-import 'package:task4/representation/widget/text_widget.dart';
+import 'package:task4/presentation_layer/widget/text_widget.dart';
 
 class DialogUtils{
   showAlertDialog(

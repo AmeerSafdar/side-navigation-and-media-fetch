@@ -8,9 +8,9 @@ import 'package:task4/bloc/image_blocs/image_screen_event.dart';
 import 'package:task4/bloc/image_blocs/image_state.dart';
 import 'package:task4/helper/const/const.dart';
 import 'package:task4/helper/const/string_helper.dart';
-import 'package:task4/representation/widget/button_widget.dart';
-import 'package:task4/representation/widget/drawerWidget.dart';
-import 'package:task4/representation/widget/text_widget.dart';
+import 'package:task4/presentation_layer/widget/button_widget.dart';
+import 'package:task4/presentation_layer/widget/drawerWidget.dart';
+import 'package:task4/presentation_layer/widget/text_widget.dart';
 
 class ImageScreen extends StatefulWidget {
   const ImageScreen({super.key});

@@ -10,9 +10,9 @@ import 'package:task4/bloc/video_blocs/video_state.dart';
 import 'package:task4/helper/const/const.dart';
 import 'package:task4/helper/const/icon_helper.dart';
 import 'package:task4/helper/const/string_helper.dart';
-import 'package:task4/representation/widget/button_widget.dart';
-import 'package:task4/representation/widget/drawerWidget.dart';
-import 'package:task4/representation/widget/text_widget.dart';
+import 'package:task4/presentation_layer/widget/button_widget.dart';
+import 'package:task4/presentation_layer/widget/drawerWidget.dart';
+import 'package:task4/presentation_layer/widget/text_widget.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoScreen extends StatefulWidget {
@@ -52,36 +52,36 @@ class _VideoScreenState extends State<VideoScreen> {
       ),
       body: BlocListener<VideoBloc, VideoStates>(
         listener: (context, state) {
-           if (state.status==VideoStatus.cameraDenied) {
-            dialogUtils.showAlertDialog(context, yesButtonTaped: ()=>Navigator.pop(context), 
-            noBtnPress: ()=>Navigator.pop(context), 
-            action: StringHelp.PERMISSION, titleContent: StringHelp.PERMISSION_DENIED);
+          if (state.status == VideoStatus.cameraDenied) {
+            dialogUtils.showAlertDialog(context,
+                yesButtonTaped: () => Navigator.pop(context),
+                noBtnPress: () => Navigator.pop(context),
+                action: StringHelp.PERMISSION,
+                titleContent: StringHelp.PERMISSION_DENIED);
+          } else if (state.status == VideoStatus.cameraPermanentDenied) {
+            dialogUtils.showAlertDialog(context,
+                yesButtonTaped: () => Navigator.pop(context, openAppSettings()),
+                noBtnPress: () => Navigator.pop(context),
+                action: StringHelp.PERMISSION,
+                titleContent:
+                    '${StringHelp.PERMISSION_DENIED} ${StringHelp.OPEN_APP_SETTINGS}');
           }
-          else if (state.status==VideoStatus.cameraPermanentDenied){
-             dialogUtils.showAlertDialog(
-              context, yesButtonTaped: (){
-                Navigator.pop(context);
-                openAppSettings();
-                }, noBtnPress: ()=>Navigator.pop(context),
-               action: StringHelp.PERMISSION, 
-               titleContent: '${StringHelp.PERMISSION_DENIED} ${StringHelp.OPEN_APP_SETTINGS}');
-      
-          }
-          if (state.status==VideoStatus.galleryDenied) {
-              dialogUtils.showAlertDialog(context, 
-              yesButtonTaped: ()=>Navigator.pop(context), 
-              noBtnPress: ()=>Navigator.pop(context), 
-              action: StringHelp.PERMISSION, titleContent: StringHelp.PERMISSION_DENIED);
-          }
-          else if (state.status==VideoStatus.galleryPermanentDenied){
-             dialogUtils.showAlertDialog(
-              context, yesButtonTaped:  (){
-                Navigator.pop(context);
-                openAppSettings();
-                }, noBtnPress: ()=>Navigator.pop(context),
-               action: StringHelp.PERMISSION, 
-               titleContent: '${StringHelp.PERMISSION_DENIED} ${StringHelp.OPEN_APP_SETTINGS}');
-      
+          if (state.status == VideoStatus.galleryDenied) {
+            dialogUtils.showAlertDialog(context,
+                yesButtonTaped: () => Navigator.pop(context),
+                noBtnPress: () => Navigator.pop(context),
+                action: StringHelp.PERMISSION,
+                titleContent: StringHelp.PERMISSION_DENIED);
+          } else if (state.status == VideoStatus.galleryPermanentDenied) {
+            dialogUtils.showAlertDialog(context,
+                yesButtonTaped: () {
+                  Navigator.pop(context);
+                  openAppSettings();
+                },
+                noBtnPress: () => Navigator.pop(context),
+                action: StringHelp.PERMISSION,
+                titleContent:
+                    '${StringHelp.PERMISSION_DENIED} ${StringHelp.OPEN_APP_SETTINGS}');
           }
         },
         child: Padding(
@@ -95,19 +95,30 @@ class _VideoScreenState extends State<VideoScreen> {
                   BlocBuilder<VideoBloc, VideoStates>(
                     builder: (context, state) {
                       if (state.status == VideoStatus.success ||
-                          state.status == VideoStatus.play ||state.status == VideoStatus.cameraDenied|| state.status == VideoStatus.cameraPermanentDenied||state.status == VideoStatus.galleryDenied|| state.status == VideoStatus.galleryPermanentDenied) {
+                          state.status == VideoStatus.play ||
+                          state.status == VideoStatus.cameraDenied ||
+                          state.status == VideoStatus.cameraPermanentDenied ||
+                          state.status == VideoStatus.galleryDenied ||
+                          state.status == VideoStatus.galleryPermanentDenied) {
                         return Column(
                           children: [
-                            if(state.video!=null)
+                            if (state.video != null)
                               VideoWidget(
-                              asp_ratio: state.video!.value.aspectRatio,
-                              video: state.video!,
-                              thumbnail: state.thumbnailImg!,
-                            )
+                                asp_ratio: state.video!.value.aspectRatio,
+                                video: state.video!,
+                                thumbnail: state.thumbnailImg!,
+                              )
                           ],
                         );
                       }
-                      if ((state.status == VideoStatus.pause||state.status == VideoStatus.cameraDenied|| state.status == VideoStatus.cameraPermanentDenied||state.status == VideoStatus.galleryDenied|| state.status == VideoStatus.galleryPermanentDenied)&&state.video!=null) {
+                      if ((state.status == VideoStatus.pause ||
+                              state.status == VideoStatus.cameraDenied ||
+                              state.status ==
+                                  VideoStatus.cameraPermanentDenied ||
+                              state.status == VideoStatus.galleryDenied ||
+                              state.status ==
+                                  VideoStatus.galleryPermanentDenied) &&
+                          state.video != null) {
                         return AspectRatio(
                           aspectRatio: state.video!.value.aspectRatio,
                           child: Image(
@@ -116,7 +127,12 @@ class _VideoScreenState extends State<VideoScreen> {
                           ),
                         );
                       }
-                      if (state.status == VideoStatus.failure ||state.status == VideoStatus.cameraDenied|| state.status == VideoStatus.cameraPermanentDenied||state.status == VideoStatus.galleryDenied|| state.status == VideoStatus.galleryPermanentDenied &&state.video!=null) {
+                      if (state.status == VideoStatus.failure ||
+                          state.status == VideoStatus.cameraDenied ||
+                          state.status == VideoStatus.cameraPermanentDenied ||
+                          state.status == VideoStatus.galleryDenied ||
+                          state.status == VideoStatus.galleryPermanentDenied &&
+                              state.video != null) {
                         if (state.video != null) {
                           return VideoWidget(
                             asp_ratio: state.video!.value.aspectRatio,

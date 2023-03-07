@@ -5,10 +5,10 @@ import 'package:task4/helper/const/color_helper.dart';
 import 'package:task4/helper/const/icon_helper.dart';
 import 'package:task4/helper/const/image_helper.dart';
 import 'package:task4/helper/const/string_helper.dart';
-import 'package:task4/representation/views/audioScreen/audio_screen.dart';
-import 'package:task4/representation/views/imagesScreen/image_screen.dart';
-import 'package:task4/representation/views/videoScreen/video_screen.dart';
-import 'package:task4/representation/widget/text_widget.dart';
+import 'package:task4/presentation_layer/layers/views/audioScreen/audio_screen.dart';
+import 'package:task4/presentation_layer/layers/views/imageScreen.dart/image_screen.dart';
+import 'package:task4/presentation_layer/layers/views/videoScreen/video_screen.dart';
+import 'package:task4/presentation_layer/widget/text_widget.dart';
 class DrawerWidget extends StatelessWidget {
   const DrawerWidget({
     Key? key,

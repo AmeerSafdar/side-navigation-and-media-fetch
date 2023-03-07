@@ -71,7 +71,7 @@ emit(
 }
  FutureOr<void> _fetchAudio(FetchAudio event, Emitter<AudioStates> emit) async{
    try {
-    Future<PermissionStatus> status= permissionUtils.askCameraPermission(Permission.storage) ;
+    Future<PermissionStatus> status= permissionUtils.askCameraPermission(Permission.storage);
     if (await status.isDenied) {
        emit(
           state.copyWith(
